@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>四象限任务管理</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🎯 四象限任务管理</div>
+    <div class="view-toggle">
+      <button id="btnKanban" class="active">看板模式</button>
+      <button id="btnList">列表模式</button>
+    </div>
+    <div class="top-actions">
+      <input id="searchBox" class="search" type="text" placeholder="搜索任务关键词…" />
+      <select id="filterSel" class="filter">
+        <option value="all">全部</option>
+        <option value="undone">未完成</option>
+        <option value="done">已完成</option>
+        <option value="q1">仅 Q1 重要且紧急</option>
+        <option value="q2">仅 Q2 重要不紧急</option>
+        <option value="q3">仅 Q3 紧急不重要</option>
+        <option value="q4">仅 Q4 既不重要也不紧急</option>
+      </select>
+      <button id="btnStats">📊 统计报表</button>
+      <button id="btnRecycle">🗑 回收站</button>
+      <button id="btnSettings">⚙ 设置</button>
+      <button id="btnBackup">💾 备份</button>
+    </div>
+  </header>
+
+  <section class="quick-add">
+    <span class="qa-hint">快速添加（默认放入 Q4，可拖拽调整）</span>
+    <input id="quickAddInput" type="text" placeholder="输入任务标题，回车或点击添加…" />
+    <button id="btnQuickAdd">添加</button>
+  </section>
+
+  <main id="kanbanView" class="kanban"></main>
+  <main id="listView" class="list hidden"></main>
+
+  <!-- 统计报表弹窗 -->
+  <div id="statsModal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head"><h3>📊 统计报表</h3><button class="x" data-close>✕</button></div>
+      <div class="modal-body" id="statsBody"></div>
+    </div>
+  </div>
+
+  <!-- 设置弹窗 -->
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head"><h3>⚙ 设置 · 每日定时唤起</h3><button class="x" data-close>✕</button></div>
+      <div class="modal-body">
+        <label class="set-row">
+          <span>启用定时唤起</span>
+          <input type="checkbox" id="setTimerOn" />
+        </label>
+        <label class="set-row">
+          <span>唤起时间</span>
+          <input type="time" id="setTimerTime" value="08:50" />
+        </label>
+        <label class="set-row">
+          <span>浏览器桌面通知</span>
+          <input type="checkbox" id="setNotify" />
+        </label>
+        <p class="hint">说明：纯前端应用在页面保持打开时，到点（默认 8:50）会自动切换到任务面板并轻提示，不弹强制窗、不打扰。若需关闭浏览器后仍自动唤起，需配合系统级计划任务/扩展。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 回收站弹窗 -->
+  <div id="recycleModal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head"><h3>🗑 回收站（误删可恢复）</h3><button class="x" data-close>✕</button></div>
+      <div class="modal-body" id="recycleBody"></div>
+    </div>
+  </div>
+
+  <!-- 编辑弹窗 -->
+  <div id="editModal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head"><h3>✏ 编辑任务</h3><button class="x" data-close>✕</button></div>
+      <div class="modal-body">
+        <label class="set-row col"><span>标题</span><input type="text" id="editTitle" /></label>
+        <label class="set-row col"><span>备注</span><textarea id="editNote" rows="4"></textarea></label>
+        <div class="modal-foot">
+          <button id="editSave" class="primary">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 隐藏的文件导入 -->
+  <input type="file" id="importFile" accept="application/json" class="hidden" />
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
