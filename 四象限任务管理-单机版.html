@@ -384,11 +384,15 @@ async function pushPull() {
     const mapL = {}; logs.forEach((l) => (mapL[l.id] = l));
     (remote.logs || []).forEach((l) => (mapL[l.id] = l));
     logs = Object.values(mapL);
-    if (before !== sig()) {
+    const changed = before !== sig();
+    if (changed) {
       saveTasks(); save(LS.logs, logs); save(LS.deleted, deleted);
-      await fetch(withToken('api/state'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tasks, logs, deleted }) }).catch(() => {});
-      render();
     }
+    // 关键修复：合并后无论本地是否变化，都把这份（含本地独有项）状态推回服务器，
+    // 否则本地新建但从未上传过的任务/日志永远不会同步到其它端（旧 bug 的根因）。
+    // 服务器按 updatedAt 逐实体合并，重复推送是幂等的，不会造成数据错乱。
+    await fetch(withToken('api/state'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tasks, logs, deleted }) }).catch(() => {});
+    if (changed) render();
   } catch (e) { /* 离线或后端不可用，忽略 */ }
 }
 async function detectSync() {

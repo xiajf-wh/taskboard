@@ -16,6 +16,10 @@ set "LOG=%~dp0update.log"
 echo [%date% %time%] === update start === >> "%LOG%"
 "%GITEXE%" pull >> "%LOG%" 2>&1
 
+:: token (可选)：若同目录存在 token.txt，则启用 API 鉴权。
+:: 该文件已被 .gitignore 忽略，不会上传到公开仓库；内容只需一行令牌文本。
+if exist "%~dp0token.txt" set /p TASK_TOKEN=<"%~dp0token.txt"
+
 :: kill old process on port 3000
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000 " ^| findstr "LISTENING"') do (
     taskkill /PID %%a /F >> "%LOG%" 2>&1
