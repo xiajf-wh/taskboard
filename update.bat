@@ -1,27 +1,27 @@
 @echo off
 cd /d %~dp0
 
-:: --- git ---
+:: git
 set "GITEXE=git"
 if not exist "C:\Program Files\Git\bin\git.exe" goto :gitok
 set "GITEXE=C:\Program Files\Git\bin\git.exe"
 :gitok
 
-:: --- node (BtSoft installed path) ---
+:: node
 set "NODEEXE=C:\BtSoft\nodejs\v24.19.0\node.exe"
 if not exist "%NODEEXE%" set "NODEEXE=node"
 
-echo [1/2] Pulling latest code ...
-"%GITEXE%" pull
+:: log all output to file, keep console clean
+set "LOG=%~dp0update.log"
+echo [%date% %time%] === update start === >> "%LOG%"
+"%GITEXE%" pull >> "%LOG%" 2>&1
 
-echo [2/2] Restarting server (port 3000) ...
-:: kill any existing node process using port 3000
+:: kill old process on port 3000
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3000 " ^| findstr "LISTENING"') do (
-    taskkill /PID %%a /F >nul 2>&1
+    taskkill /PID %%a /F >> "%LOG%" 2>&1
 )
-:: wait a moment for port to free
 timeout /t 1 /nobreak >nul
-:: start new server in background
-start /b "" "%NODEEXE%" server.js >nul 2>&1
+start /b "" "%NODEEXE%" server.js >> "%LOG%" 2>&1
 
-echo [done] Code pulled, server restarted on port 3000
+echo [%date% %time%] === update done, server restarted === >> "%LOG%"
+echo [OK] code pulled, server restarted. See update.log for details.
