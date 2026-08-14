@@ -51,7 +51,7 @@ function mergeData(existing, incoming) {
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8' };
 
 function send(res, code, body, type) {
-  res.writeHead(code, { 'Content-Type': type || 'application/json; charset=utf-8' });
+  res.writeHead(code, { 'Content-Type': type || 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }
 

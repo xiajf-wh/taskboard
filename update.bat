@@ -14,7 +14,9 @@ if not exist "%NODEEXE%" set "NODEEXE=node"
 :: log all output to file, keep console clean
 set "LOG=%~dp0update.log"
 echo [%date% %time%] === update start === >> "%LOG%"
-"%GITEXE%" pull >> "%LOG%" 2>&1
+:: 用 fetch + reset --hard 取代 git pull：能扛本地改动/分叉，部署目标机直接对齐 origin/master
+"%GITEXE%" fetch origin >> "%LOG%" 2>&1
+"%GITEXE%" reset --hard origin/master >> "%LOG%" 2>&1
 
 :: token (可选)：若同目录存在 token.txt，则启用 API 鉴权。
 :: 该文件已被 .gitignore 忽略，不会上传到公开仓库；内容只需一行令牌文本。
